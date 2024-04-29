@@ -1,0 +1,23 @@
+package ${groupId}.infrastructure.common;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+
+import lombok.Data;
+
+import java.util.Date;
+import java.io.Serializable;
+
+@Data
+public class BaseEntity implements Serializable {
+    private String createdBy;
+    private String updatedBy;
+    @TableField(fill = FieldFill.INSERT)
+    private Date createdTime;
+    @TableField(fill = FieldFill.UPDATE)
+    private Date updatedTime;
+    @TableLogic
+    private Integer deleted = 0;
+
+}

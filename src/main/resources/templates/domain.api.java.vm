@@ -1,0 +1,49 @@
+package ${customInfo.packageName};
+
+
+import ${groupId}.api.${entity}DomainIApi;
+import org.springframework.web.bind.annotation.RestController;
+import ${groupId}.domain.${entity}DM;
+import ${groupId}.domain.${entity}DomainService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+@RestController
+public class ${entity}DomainApi implements ${entity}DomainIApi {
+
+    @Autowired
+    ${entity}DomainService ${controllerMappingHyphen}DomainService;
+
+    @Override
+    public List<${entity}DM> getAll(${entity}DM ${controllerMappingHyphen}DM) {
+        List<${entity}DM> ${controllerMappingHyphen}DMList = ${controllerMappingHyphen}DomainService.getAll(${controllerMappingHyphen}DM);
+        return ${controllerMappingHyphen}DMList;
+    }
+
+    @Override
+    public ${entity}DM add(${entity}DM ${controllerMappingHyphen}DM) {
+        ${controllerMappingHyphen}DomainService.add(${controllerMappingHyphen}DM);
+        return ${controllerMappingHyphen}DM;
+    }
+
+    @Override
+    public List<${entity}DM> page(${entity}DM ${controllerMappingHyphen}DM, Integer current, Integer size) {
+        return ${controllerMappingHyphen}DomainService.page(${controllerMappingHyphen}DM,current,size);
+    }
+
+    @Override
+    public ${entity}DM queryOne(${entity}DM ${controllerMappingHyphen}DM) {
+        return ${controllerMappingHyphen}DomainService.queryOne(${controllerMappingHyphen}DM);
+    }
+
+    @Override
+    public ${entity}DM update(${entity}DM ${controllerMappingHyphen}DM) {
+        return ${controllerMappingHyphen}DomainService.update(${controllerMappingHyphen}DM);
+    }
+
+    @Override
+    public ${entity}DM delete(${entity}DM ${controllerMappingHyphen}DM) {
+        return ${controllerMappingHyphen}DomainService.delete(${controllerMappingHyphen}DM);
+    }
+}
