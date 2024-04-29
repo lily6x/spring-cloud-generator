@@ -1,0 +1,18 @@
+package ${customInfo.packageName};
+
+import java.util.List;
+
+public interface ${entity}DomainService {
+
+    List<${entity}DM> getAll(${entity}DM ${controllerMappingHyphen}DM);
+
+    ${entity}DM add(${entity}DM ${controllerMappingHyphen}DM);
+
+    List<${entity}DM> page(${entity}DM ${controllerMappingHyphen}DM, Integer current, Integer size);
+
+    ${entity}DM queryOne(${entity}DM ${controllerMappingHyphen}DM);
+
+    ${entity}DM update(${entity}DM ${controllerMappingHyphen}DM);
+
+    ${entity}DM delete(${entity}DM ${controllerMappingHyphen}DM);
+}

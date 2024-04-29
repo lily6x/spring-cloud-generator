@@ -1,0 +1,14 @@
+package ${groupId}.infrastructure.common;
+
+import org.modelmapper.ModelMapper;
+
+public class ObjectConvert {
+
+    private final static ModelMapper modelMapper = new ModelMapper();
+
+
+    public static <D> D convert(Object obj, Class<D> dClass){
+        return modelMapper.map(obj, dClass);
+
+    }
+}
