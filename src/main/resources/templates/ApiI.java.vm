@@ -1,5 +1,6 @@
 package ${customInfo.packageName};
 
+import ${groupId}.common.BaseResponse;
 import ${groupId}.domain.${entity}DM;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,20 +11,20 @@ import java.util.List;
 public interface ${entity}DomainIApi {
 
     @RequestMapping(value = "/${controllerMappingHyphen}/get-all", method = RequestMethod.GET)
-    List<${entity}DM> getAll(${entity}DM ${controllerMappingHyphen}DM);
+    BaseResponse<List<${entity}DM>> getAll(${entity}DM ${controllerMappingHyphen}DM);
 
     @RequestMapping(value = "/${controllerMappingHyphen}/add", method = RequestMethod.POST)
-    ${entity}DM add(${entity}DM ${controllerMappingHyphen}DM);
+    BaseResponse<${entity}DM> add(${entity}DM ${controllerMappingHyphen}DM);
 
     @RequestMapping(value = "/${controllerMappingHyphen}/page/{current}/{size}", method = RequestMethod.GET)
-    List<${entity}DM> page(${entity}DM ${controllerMappingHyphen}DM, @PathVariable Integer current, @PathVariable Integer size);
+    BaseResponse<List<${entity}DM>> page(${entity}DM ${controllerMappingHyphen}DM, @PathVariable Integer current, @PathVariable Integer size);
 
     @RequestMapping(value = "/${controllerMappingHyphen}/get-one", method = RequestMethod.GET)
-    ${entity}DM queryOne(${entity}DM ${controllerMappingHyphen}DM);
+    BaseResponse<${entity}DM> queryOne(${entity}DM ${controllerMappingHyphen}DM);
 
     @RequestMapping(value = "/${controllerMappingHyphen}/update", method = RequestMethod.POST)
-    ${entity}DM update(${entity}DM ${controllerMappingHyphen}DM);
+    BaseResponse<${entity}DM> update(${entity}DM ${controllerMappingHyphen}DM);
 
     @RequestMapping(value = "/${controllerMappingHyphen}/delete", method = RequestMethod.POST)
-    ${entity}DM delete(${entity}DM ${controllerMappingHyphen}DM);
+    BaseResponse<${entity}DM> delete(${entity}DM ${controllerMappingHyphen}DM);
 }

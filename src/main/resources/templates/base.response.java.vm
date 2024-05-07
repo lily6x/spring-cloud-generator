@@ -1,0 +1,42 @@
+package ${groupId}.common;
+
+import com.alibaba.fastjson2.JSON;
+import lombok.Data;
+
+@Data
+public class BaseResponse<T> {
+    //响应码
+    private String code;
+    //响应消息
+    private String message;
+    //响应结果
+    private T data;
+
+    public BaseResponse() {}
+
+    public BaseResponse(String code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
+    }
+
+    public static <T> BaseResponse<T> success(T data){
+        return new BaseResponse<>("6666","success",data);
+    }
+
+    public static <T> BaseResponse<T> failure(T data){
+        return new BaseResponse<>("9999","failure",data);
+    }
+
+    public static <T> BaseResponse<T> failure(String message){
+        return new BaseResponse<>("9999",message,null);
+    }
+    public static <T> BaseResponse<T> failure(String code, String message){
+        return new BaseResponse<>(code,message,null);
+    }
+}

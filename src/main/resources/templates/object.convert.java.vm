@@ -8,6 +8,9 @@ public class ObjectConvert {
 
 
     public static <D> D convert(Object obj, Class<D> dClass){
+        if (null == obj){
+            return null;
+        }
         return modelMapper.map(obj, dClass);
 
     }

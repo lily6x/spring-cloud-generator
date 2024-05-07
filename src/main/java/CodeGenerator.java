@@ -22,8 +22,8 @@ public class CodeGenerator {
         //project path
         Generator.GeneratorConf generatorConf = new Generator.GeneratorConf();
         generatorConf.setGroupId("com.lily.user");
-        generatorConf.setArtifactId("user-center12");
-        generatorConf.setModel("user12");
+        generatorConf.setArtifactId("user-center15");
+        generatorConf.setModel("user15");
         generatorConf.setDbUrl("jdbc:mysql://rm-wz912w7jddju3sglupo.mysql.rds.aliyuncs.com/dbtest?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true");
         generatorConf.setDbUserName("root");
         generatorConf.setDbPassword("Szyy2024");
@@ -37,6 +37,7 @@ public class CodeGenerator {
         Generator.createDirectory(generatorConf.getModelProviderPath()+"/src/main/resources");
         Generator.createDirectory(generatorConf.getModelClientPath()+"/src/main/resources");
         Generator.createDirectory(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/domain");
+        Generator.createDirectory(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/common");
         Generator.createDirectory(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/'));
         Generator.createDirectory(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/conf");
         Generator.createDirectory(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/common");
@@ -69,6 +70,7 @@ public class CodeGenerator {
         Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/common/BaseEntity.java","templates/base.entity.java.vm",context);
         Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/common/ObjectConvert.java","templates/object.convert.java.vm",context);
         Generator.generatorCus(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/domain/BaseDM.java","templates/base.dm.java.vm",context);
+        Generator.generatorCus(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/common/BaseResponse.java","templates/base.response.java.vm",context);
 
         //Step 3
         CodeGenerator.testSimple(generatorConf);

@@ -1,5 +1,6 @@
 package ${customInfo.packageName};
 
+import ${groupId}.common.BaseResponse;
 import ${groupId}.domain.${entity}DM;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -22,33 +23,33 @@ public interface ${entity}DomainApiClient extends ${entity}DomainIApi {
 
     class ${entity}DomainApiFallbackWithFactory implements ${entity}DomainApiClient {
         @Override
-        public List<${entity}DM> getAll(${entity}DM ${controllerMappingHyphen}DM) {
-            return List.of();
+        public BaseResponse<List<${entity}DM>> getAll(${entity}DM ${controllerMappingHyphen}DM) {
+            return BaseResponse.failure(null);
         }
 
         @Override
-        public ${entity}DM add(${entity}DM ${controllerMappingHyphen}DM) {
-            return null;
+        public BaseResponse<${entity}DM> add(${entity}DM ${controllerMappingHyphen}DM) {
+            return BaseResponse.failure(null);
         }
 
         @Override
-        public List<${entity}DM> page(${entity}DM ${controllerMappingHyphen}DM, Integer current, Integer size) {
-            return List.of();
+        public BaseResponse<List<${entity}DM>> page(${entity}DM ${controllerMappingHyphen}DM, Integer current, Integer size) {
+            return BaseResponse.failure(null);
         }
 
         @Override
-        public ${entity}DM queryOne(${entity}DM ${controllerMappingHyphen}DM) {
-            return null;
+        public BaseResponse<${entity}DM> queryOne(${entity}DM ${controllerMappingHyphen}DM) {
+            return BaseResponse.failure(null);
         }
 
         @Override
-        public ${entity}DM update(${entity}DM ${controllerMappingHyphen}DM) {
-            return null;
+        public BaseResponse<${entity}DM> update(${entity}DM ${controllerMappingHyphen}DM) {
+            return BaseResponse.failure(null);
         }
 
         @Override
-        public ${entity}DM delete(${entity}DM ${controllerMappingHyphen}DM) {
-            return null;
+        public BaseResponse<${entity}DM> delete(${entity}DM ${controllerMappingHyphen}DM) {
+            return BaseResponse.failure(null);
         }
     }
 
