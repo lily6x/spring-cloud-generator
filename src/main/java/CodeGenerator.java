@@ -21,13 +21,19 @@ public class CodeGenerator {
         //Step 1 生成项目名，模块名
         //project path
         Generator.GeneratorConf generatorConf = new Generator.GeneratorConf();
+        //签名
         generatorConf.setGroupId("com.lily.user");
-        generatorConf.setArtifactId("user-center15");
-        generatorConf.setModel("user15");
-        generatorConf.setDbUrl("jdbc:mysql://rm-wz912w7jddju3sglupo.mysql.rds.aliyuncs.com/dbtest?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true");
+        //项目名
+        generatorConf.setArtifactId("user_center99");
+        //模块名
+        generatorConf.setModel("user");
+        generatorConf.setInclude("uc_user,uc_account,uc_account_flow,uc_tenant,uc_teachers,uc_student,uc_third_party_account");
+
+        generatorConf.setDbUrl("jdbc:mysql://rm-wz912w7jddju3sglupo.mysql.rds.aliyuncs.com/user_center?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true");
         generatorConf.setDbUserName("root");
         generatorConf.setDbPassword("Szyy2024");
-        generatorConf.setDbSchema("dbtest");
+        generatorConf.setDbSchema("user_center");
+
 
         Generator.createDirectory(generatorConf.getProjectPath());
         Generator.createDirectory(generatorConf.getModelApiPath());
@@ -71,6 +77,7 @@ public class CodeGenerator {
         Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/common/ObjectConvert.java","templates/object.convert.java.vm",context);
         Generator.generatorCus(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/domain/BaseDM.java","templates/base.dm.java.vm",context);
         Generator.generatorCus(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/common/BaseResponse.java","templates/base.response.java.vm",context);
+        Generator.generatorCus(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/common/PageDM.java","templates/page.dm.java.vm",context);
 
         //Step 3
         CodeGenerator.testSimple(generatorConf);
@@ -122,7 +129,7 @@ public class CodeGenerator {
 
         // 策略配置
         StrategyConfig strategyConfig = new StrategyConfig.Builder()
-                .addInclude("user")
+                .addInclude(generatorConf.getInclude())
                 //实体类策略配置
                 .entityBuilder().enableLombok()
                 .superClass(generatorConf.getGroupId()+".infrastructure.common.BaseEntity")

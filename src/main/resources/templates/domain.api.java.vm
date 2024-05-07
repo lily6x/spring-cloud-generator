@@ -1,6 +1,7 @@
 package ${customInfo.packageName};
 
 import ${groupId}.common.BaseResponse;
+import ${groupId}.common.PageDM;
 import ${groupId}.api.${entity}DomainIApi;
 import org.springframework.web.bind.annotation.RestController;
 import ${groupId}.domain.${entity}DM;
@@ -13,37 +14,37 @@ import java.util.List;
 public class ${entity}DomainApi implements ${entity}DomainIApi {
 
     @Autowired
-    ${entity}DomainService ${controllerMappingHyphen}DomainService;
+    ${entity}DomainService domainService;
 
     @Override
-    public BaseResponse<List<${entity}DM>> getAll(${entity}DM ${controllerMappingHyphen}DM) {
-        List<${entity}DM> ${controllerMappingHyphen}DMList = ${controllerMappingHyphen}DomainService.getAll(${controllerMappingHyphen}DM);
-        return BaseResponse.success(${controllerMappingHyphen}DMList);
+    public BaseResponse<List<${entity}DM>> getAll(${entity}DM dm) {
+        List<${entity}DM> dmList = domainService.getAll(dm);
+        return BaseResponse.success(dmList);
     }
 
     @Override
-    public BaseResponse<${entity}DM> add(${entity}DM ${controllerMappingHyphen}DM) {
-        ${controllerMappingHyphen}DomainService.add(${controllerMappingHyphen}DM);
-        return BaseResponse.success(${controllerMappingHyphen}DM);
+    public BaseResponse<${entity}DM> add(${entity}DM dm) {
+        domainService.add(dm);
+        return BaseResponse.success(dm);
     }
 
     @Override
-    public BaseResponse<List<${entity}DM>> page(${entity}DM ${controllerMappingHyphen}DM, Integer current, Integer size) {
-        return BaseResponse.success(${controllerMappingHyphen}DomainService.page(${controllerMappingHyphen}DM,current,size));
+    public BaseResponse<PageDM<${entity}DM>> page(${entity}DM dm, Integer current, Integer size) {
+        return BaseResponse.success(domainService.page(dm,current,size));
     }
 
     @Override
-    public BaseResponse<${entity}DM> queryOne(${entity}DM ${controllerMappingHyphen}DM) {
-        return BaseResponse.success(${controllerMappingHyphen}DomainService.queryOne(${controllerMappingHyphen}DM));
+    public BaseResponse<${entity}DM> queryOne(${entity}DM dm) {
+        return BaseResponse.success(domainService.queryOne(dm));
     }
 
     @Override
-    public BaseResponse<${entity}DM> update(${entity}DM ${controllerMappingHyphen}DM) {
-        return BaseResponse.success(${controllerMappingHyphen}DomainService.update(${controllerMappingHyphen}DM));
+    public BaseResponse<${entity}DM> update(${entity}DM dm) {
+        return BaseResponse.success(domainService.update(dm));
     }
 
     @Override
-    public BaseResponse<${entity}DM> delete(${entity}DM ${controllerMappingHyphen}DM) {
-        return BaseResponse.success(${controllerMappingHyphen}DomainService.delete(${controllerMappingHyphen}DM));
+    public BaseResponse<${entity}DM> delete(${entity}DM dm) {
+        return BaseResponse.success(domainService.delete(dm));
     }
 }

@@ -1,18 +1,19 @@
 package ${customInfo.packageName};
 
 import java.util.List;
+import ${groupId}.common.PageDM;
 
 public interface ${entity}DomainService {
 
-    List<${entity}DM> getAll(${entity}DM ${controllerMappingHyphen}DM);
+    List<${entity}DM> getAll(${entity}DM dm);
 
-    ${entity}DM add(${entity}DM ${controllerMappingHyphen}DM);
+    ${entity}DM add(${entity}DM dm);
 
-    List<${entity}DM> page(${entity}DM ${controllerMappingHyphen}DM, Integer current, Integer size);
+    PageDM<${entity}DM> page(${entity}DM dm, Integer current, Integer size);
 
-    ${entity}DM queryOne(${entity}DM ${controllerMappingHyphen}DM);
+    ${entity}DM queryOne(${entity}DM dm);
 
-    ${entity}DM update(${entity}DM ${controllerMappingHyphen}DM);
+    ${entity}DM update(${entity}DM dm);
 
-    ${entity}DM delete(${entity}DM ${controllerMappingHyphen}DM);
+    ${entity}DM delete(${entity}DM dm);
 }

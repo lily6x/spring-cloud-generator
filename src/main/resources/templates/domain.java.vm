@@ -8,6 +8,7 @@ import ${groupId}.infrastructure.persistent.entity.${entity};
 import ${groupId}.infrastructure.persistent.service.I${entity}Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ${groupId}.common.PageDM;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,61 +17,66 @@ import java.util.List;
 public class ${entity}Domain extends ${entity}DM implements ${entity}DomainService{
 
     @Autowired
-    I${entity}Service ${controllerMappingHyphen}Service;
+    I${entity}Service service;
     @Override
-    public List<${entity}DM> getAll(${entity}DM ${controllerMappingHyphen}DM) {
-        QueryWrapper<${entity}> queryWrapper = new QueryWrapper<>(ObjectConvert.convert(${controllerMappingHyphen}DM,${entity}.class));
+    public List<${entity}DM> getAll(${entity}DM dm) {
+        QueryWrapper<${entity}> queryWrapper = new QueryWrapper<>(ObjectConvert.convert(dm,${entity}.class));
 //        queryWrapper.eq("name","西施");
-        List<${entity}> ${controllerMappingHyphen}List = ${controllerMappingHyphen}Service.list(queryWrapper);
+        List<${entity}> list = service.list(queryWrapper);
         List<${entity}DM> domainList = new ArrayList<>();
 
-        ${controllerMappingHyphen}List.forEach(obj -> {
+        list.forEach(obj -> {
             domainList.add(ObjectConvert.convert(obj,${entity}DM.class));
         });
         return domainList;
     }
 
     @Override
-    public ${entity}DM add(${entity}DM ${controllerMappingHyphen}DM) {
-        ${entity} ${controllerMappingHyphen} =  ObjectConvert.convert(${controllerMappingHyphen}DM, ${entity}.class);
-        ${controllerMappingHyphen}Service.save(${controllerMappingHyphen});
-        return ${controllerMappingHyphen}DM;
+    public ${entity}DM add(${entity}DM dm) {
+        ${entity} obj =  ObjectConvert.convert(dm, ${entity}.class);
+        service.save(obj);
+        return dm;
     }
 
     @Override
-    public List<${entity}DM> page(${entity}DM ${controllerMappingHyphen}DM, Integer current, Integer size) {
-        QueryWrapper<${entity}> queryWrapper = new QueryWrapper<>(ObjectConvert.convert(${controllerMappingHyphen}DM,${entity}.class));
+    public PageDM<${entity}DM> page(${entity}DM dm, Integer current, Integer size) {
+        QueryWrapper<${entity}> queryWrapper = new QueryWrapper<>(ObjectConvert.convert(dm,${entity}.class));
 //        queryWrapper.eq("name","西施");
         Page<${entity}> page = new Page<>(current,size);
-//        Page<${entity}> p = ${controllerMappingHyphen}Service.page(page,queryWrapper);
-        List<${entity}> ${controllerMappingHyphen}List = ${controllerMappingHyphen}Service.page(page,queryWrapper).getRecords();
+        Page<${entity}> p = service.page(page,queryWrapper);
+        List<${entity}> list = p.getRecords();
         List<${entity}DM> domainList = new ArrayList<>();
-        ${controllerMappingHyphen}List.forEach(obj -> {
+        list.forEach(obj -> {
             domainList.add(ObjectConvert.convert(obj,${entity}DM.class));
         });
-        return domainList;
+        PageDM<${entity}DM> pageDM = new PageDM<>();
+        pageDM.setCurrent(current);
+        pageDM.setSize(size);
+        pageDM.setTotal(p.getTotal());
+        pageDM.setRecords(domainList);
+        return pageDM;
     }
 
     @Override
-    public ${entity}DM queryOne(${entity}DM ${controllerMappingHyphen}DM) {
-        ${entity} ${controllerMappingHyphen} = ObjectConvert.convert(${controllerMappingHyphen}DM,${entity}.class);
-        QueryWrapper<${entity}> queryWrapper = new QueryWrapper<>(${controllerMappingHyphen});
-        ${entity} res = ${controllerMappingHyphen}Service.getOne(queryWrapper);
+    public ${entity}DM queryOne(${entity}DM dm) {
+        ${entity} obj = ObjectConvert.convert(dm,${entity}.class);
+        QueryWrapper<${entity}> queryWrapper = new QueryWrapper<>(obj);
+        ${entity} res = service.getOne(queryWrapper);
         return ObjectConvert.convert(res, ${entity}DM.class);
     }
 
     @Override
-    public ${entity}DM update(${entity}DM ${controllerMappingHyphen}DM) {
-        ${entity} ${controllerMappingHyphen} =  ObjectConvert.convert(${controllerMappingHyphen}DM, ${entity}.class);
-        ${controllerMappingHyphen}Service.updateById(${controllerMappingHyphen});
-        return ${controllerMappingHyphen}DM;
+    public ${entity}DM update(${entity}DM dm) {
+        ${entity} obj =  ObjectConvert.convert(dm, ${entity}.class);
+        service.updateById(obj);
+        return dm;
     }
 
     @Override
-    public ${entity}DM delete(${entity}DM ${controllerMappingHyphen}DM) {
-        ${entity} ${controllerMappingHyphen} =  ObjectConvert.convert(${controllerMappingHyphen}DM, ${entity}.class);
-        ${controllerMappingHyphen}Service.removeById(${controllerMappingHyphen});
-        return ${controllerMappingHyphen}DM;
+    public ${entity}DM delete(${entity}DM dm) {
+        ${entity} obj =  ObjectConvert.convert(dm, ${entity}.class);
+        service.removeById(obj);
+        return dm;
     }
 
 }

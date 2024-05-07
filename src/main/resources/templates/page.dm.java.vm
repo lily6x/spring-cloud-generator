@@ -1,0 +1,15 @@
+package ${groupId}.common;
+
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class PageDM<T> {
+
+    private int size;
+    private int current;
+    private long total;
+    private List<T> Records;
+
+}

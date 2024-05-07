@@ -1,6 +1,7 @@
 package ${customInfo.packageName};
 
 import ${groupId}.common.BaseResponse;
+import ${groupId}.common.PageDM;
 import ${groupId}.domain.${entity}DM;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -23,32 +24,32 @@ public interface ${entity}DomainApiClient extends ${entity}DomainIApi {
 
     class ${entity}DomainApiFallbackWithFactory implements ${entity}DomainApiClient {
         @Override
-        public BaseResponse<List<${entity}DM>> getAll(${entity}DM ${controllerMappingHyphen}DM) {
+        public BaseResponse<List<${entity}DM>> getAll(${entity}DM dm) {
             return BaseResponse.failure(null);
         }
 
         @Override
-        public BaseResponse<${entity}DM> add(${entity}DM ${controllerMappingHyphen}DM) {
+        public BaseResponse<${entity}DM> add(${entity}DM dm) {
             return BaseResponse.failure(null);
         }
 
         @Override
-        public BaseResponse<List<${entity}DM>> page(${entity}DM ${controllerMappingHyphen}DM, Integer current, Integer size) {
+        public BaseResponse<PageDM<${entity}DM>> page(${entity}DM dm, Integer current, Integer size) {
             return BaseResponse.failure(null);
         }
 
         @Override
-        public BaseResponse<${entity}DM> queryOne(${entity}DM ${controllerMappingHyphen}DM) {
+        public BaseResponse<${entity}DM> queryOne(${entity}DM dm) {
             return BaseResponse.failure(null);
         }
 
         @Override
-        public BaseResponse<${entity}DM> update(${entity}DM ${controllerMappingHyphen}DM) {
+        public BaseResponse<${entity}DM> update(${entity}DM dm) {
             return BaseResponse.failure(null);
         }
 
         @Override
-        public BaseResponse<${entity}DM> delete(${entity}DM ${controllerMappingHyphen}DM) {
+        public BaseResponse<${entity}DM> delete(${entity}DM dm) {
             return BaseResponse.failure(null);
         }
     }
