@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: ${model}-service
+  profiles:
+    active: dev
+  main:
+    allow-bean-definition-overriding: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: 121.196.232.69:8848
+        namespace: 39e568ac-4b77-41cd-94d0-60c30b5dec26
+        file-extension: yaml
+        refresh-enabled: true
+        group: DEFAULT_GROUP
+      discovery:
+        server-addr: 121.196.232.69:8848
+        namespace: 39e568ac-4b77-41cd-94d0-60c30b5dec26
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: sit
+  cloud:
+    nacos:
+      config:
+        server-addr: 121.196.232.69:8848
+        namespace: 77b50ac0-d068-4a20-b858-5ceebdbe1917
+        file-extension: yaml
+        refresh-enabled: true
+        group: DEFAULT_GROUP
+      discovery:
+        server-addr: 121.196.232.69:8848
+        namespace: 77b50ac0-d068-4a20-b858-5ceebdbe1917

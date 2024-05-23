@@ -1,6 +1,6 @@
 package ${customInfo.packageName};
 
-
+import java.time.LocalDate;
 #if(${springdoc})
 import io.swagger.v3.oas.annotations.media.Schema;
 #elseif(${swagger})
@@ -32,6 +32,7 @@ import lombok.experimental.Accessors;
 #end
 
 #if(${springdoc})
+@Schema(name = "${entity}", description = "$!{table.comment}")
 #elseif(${swagger})
 @ApiModel(value = "${entity}对象", description = "$!{table.comment}")
 #end

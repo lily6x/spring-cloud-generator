@@ -2,7 +2,10 @@
 <configuration debug="false" scan="true" scanPeriod="1 seconds">
 
     <contextName>logback</contextName>
-    <property name="log.name" value="logs/demo"/>
+    <springProperty scope="context" name="logPath" source="logging.file.path" defaultValue="log"/>
+    <springProperty scope="context" name="appName" source="spring.application.name" defaultValue="temp"/>
+    <property name="log.path" value="${logPath}"/>
+    <property name="appName" value="${appName}"/>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -11,9 +14,9 @@
     </appender>
 
     <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>`${log.name}`.log</file>
+        <file>`${log.path}`/`${appName}`</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <FileNamePattern>${log.name}.%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
+            <FileNamePattern>`${log.path}`/`${appName}`.%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
             <!-- 单个日志文件最多 100MB -->
             <maxFileSize>100MB</maxFileSize>
             <!--只保留最近7天的日志-->

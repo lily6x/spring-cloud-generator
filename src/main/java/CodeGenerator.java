@@ -11,10 +11,19 @@ import org.apache.velocity.VelocityContext;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class CodeGenerator {
     public static void main(String[] args) {
         CodeGenerator.execute();
+//        CodeGenerator.uuid();
+    }
+
+    public static void uuid(){
+        UUID uuid = UUID.randomUUID();
+        String uuidStr = uuid.toString().replace("-", ""); // 去掉UUID中的横线
+        String shortUuid = uuidStr.substring(0, 32); // 取前32位
+        System.out.println("32位UUID: " + shortUuid);
     }
 
     public static void execute(){
@@ -22,17 +31,17 @@ public class CodeGenerator {
         //project path
         Generator.GeneratorConf generatorConf = new Generator.GeneratorConf();
         //签名
-        generatorConf.setGroupId("com.lily.user");
+        generatorConf.setGroupId("com.lily.sse");
         //项目名
-        generatorConf.setArtifactId("user_center99");
+        generatorConf.setArtifactId("sse");
         //模块名
-        generatorConf.setModel("user");
-        generatorConf.setInclude("uc_user,uc_account,uc_account_flow,uc_tenant,uc_teachers,uc_student,uc_third_party_account");
+        generatorConf.setModel("sse");
+        generatorConf.setInclude("ai_my_message");
 
-        generatorConf.setDbUrl("jdbc:mysql://rm-wz912w7jddju3sglupo.mysql.rds.aliyuncs.com/user_center?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true");
+        generatorConf.setDbUrl("jdbc:mysql://rm-wz912w7jddju3sglupo.mysql.rds.aliyuncs.com/ai_study_room?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true");
         generatorConf.setDbUserName("root");
         generatorConf.setDbPassword("Szyy2024");
-        generatorConf.setDbSchema("user_center");
+        generatorConf.setDbSchema("ai_study_room");
 
 
         Generator.createDirectory(generatorConf.getProjectPath());
@@ -68,6 +77,7 @@ public class CodeGenerator {
         Generator.generatorCus(generatorConf.getModelProviderPath()+"/pom.xml","templates/provider.pom.vm",context);
         Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/resources/application.yml","templates/application.yml.vm",context);
         Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/resources/logback-spring.xml","templates/logback-spring.xml.vm",context);
+        Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/resources/bootstrap.yml","templates/bootstrap.yml.vm",context);
         Generator.generatorCus(generatorConf.getModelClientPath()+"/src/main/resources/application.yml","templates/client-application.yml.vm",context);
         Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/ApplicationMain.java","templates/application.main.java.vm",context);
         Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/conf/SwaggerConfig.java","templates/swagger.config.java.vm",context);
@@ -134,7 +144,7 @@ public class CodeGenerator {
                 .entityBuilder().enableLombok()
                 .superClass(generatorConf.getGroupId()+".infrastructure.common.BaseEntity")
                 .addSuperEntityColumns("created_by", "created_time", "updated_by", "updated_time", "deleted")
-                .idType(IdType.AUTO)
+                .idType(IdType.ASSIGN_UUID)
                 .logicDeleteColumnName("deleted")
 //                .addTableFills(new Property("createdTime", FieldFill.INSERT))
 //                .addTableFills(new Property("updatedTime", FieldFill.INSERT_UPDATE))
