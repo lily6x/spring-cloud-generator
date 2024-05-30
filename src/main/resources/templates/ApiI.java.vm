@@ -13,20 +13,26 @@ import java.util.List;
 public interface ${entity}DomainIApi {
 
     @RequestMapping(value = "/${controllerMappingHyphen}/get-all", method = RequestMethod.GET)
+    @Operation(summary = "查询所有数据", description = "条件参数可选")
     BaseResponse<List<${entity}DM>> getAll(${entity}DM dm);
 
     @RequestMapping(value = "/${controllerMappingHyphen}/add", method = RequestMethod.POST)
+    @Operation(summary = "添加单条数据", description = "唯一标识符 32 位 UUID")
     BaseResponse<${entity}DM> add(@RequestBody ${entity}DM dm);
 
     @RequestMapping(value = "/${controllerMappingHyphen}/page/{current}/{size}", method = RequestMethod.GET)
+    @Operation(summary = "分页查询所有数据", description = "条件参数可选,分页参数必传")
     BaseResponse<PageDM<${entity}DM>> page(${entity}DM dm, @PathVariable Integer current, @PathVariable Integer size);
 
     @RequestMapping(value = "/${controllerMappingHyphen}/get-one", method = RequestMethod.GET)
+    @Operation(summary = "查询单条数据", description = "参数可选，若查询到多条，返回错误")
     BaseResponse<${entity}DM> queryOne(${entity}DM dm);
 
     @RequestMapping(value = "/${controllerMappingHyphen}/update", method = RequestMethod.POST)
+    @Operation(summary = "更新单条数据", description = "唯一标识符 32 位 UUID")
     BaseResponse<${entity}DM> update(@RequestBody ${entity}DM dm);
 
     @RequestMapping(value = "/${controllerMappingHyphen}/delete", method = RequestMethod.POST)
+    @Operation(summary = "删除单条数据", description = "唯一标识符 32 位 UUID")
     BaseResponse<${entity}DM> delete(@RequestBody ${entity}DM dm);
 }
