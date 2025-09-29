@@ -31,17 +31,27 @@ public class CodeGenerator {
         //project path
         Generator.GeneratorConf generatorConf = new Generator.GeneratorConf();
         //签名
-        generatorConf.setGroupId("com.lily.sse");
+        generatorConf.setGroupId("com.mg.ai");
         //项目名
-        generatorConf.setArtifactId("sse");
+        generatorConf.setArtifactId("mindgen-ai-user-center");
         //模块名
-        generatorConf.setModel("sse");
-        generatorConf.setInclude("ai_my_message");
+        generatorConf.setModel("mg-user-center");
+        // 生成表 集合
+        generatorConf.setInclude("t_user,t_account,t_tenant");
 
-        generatorConf.setDbUrl("jdbc:mysql://rm-wz912w7jddju3sglupo.mysql.rds.aliyuncs.com/ai_study_room?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true");
+
+//        generatorConf.setInclude("ai_my_message");
+//
+//        generatorConf.setDbUrl("jdbc:mysql://rm-wz912w7jddju3sglupo.mysql.rds.aliyuncs.com/ai_study_room?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true");
+//        generatorConf.setDbUserName("root");
+//        generatorConf.setDbPassword("Szyy2024");
+//        generatorConf.setDbSchema("ai_study_room");
+
+
+        generatorConf.setDbUrl("jdbc:mysql://47.115.76.103:3306/ai_platform?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai&tinyInt1isBit=false");
         generatorConf.setDbUserName("root");
-        generatorConf.setDbPassword("Szyy2024");
-        generatorConf.setDbSchema("ai_study_room");
+        generatorConf.setDbPassword("123456");
+        generatorConf.setDbSchema("ai_platform");
 
 
         Generator.createDirectory(generatorConf.getProjectPath());
@@ -71,6 +81,7 @@ public class CodeGenerator {
         context.put("client", generatorConf.getModelClient());
         context.put("provider", generatorConf.getModelProvider());
         Generator.generatorCus(generatorConf.getProjectPath()+"/pom.xml","templates/parent.pom.vm",context);
+        Generator.generatorCus(generatorConf.getProjectPath()+"/Dockerfile","templates/Dockerfile.vm",context);
         Generator.generatorCus(generatorConf.getProjectPath()+"/.gitignore","templates/.gitignore.vm",context);
         Generator.generatorCus(generatorConf.getModelApiPath()+"/pom.xml","templates/api.pom.vm",context);
         Generator.generatorCus(generatorConf.getModelClientPath()+"/pom.xml","templates/client.pom.vm",context);

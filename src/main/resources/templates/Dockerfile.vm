@@ -1,0 +1,20 @@
+# 1. 选择基础镜像（体积小，启动快）
+FROM eclipse-temurin:17-jdk-jammy
+
+# 2. 设置时区 & 字体（可选，避免中文乱码 / PDF 导出乱码）
+RUN echo "Asia/Chongqing" > /etc/timezone
+
+# 3. 设置工作目录
+WORKDIR /app
+
+# 4. 复制 jar 包到容器
+COPY target/*.jar app.jar
+
+# 5. 声明挂载点（Spring Boot 临时文件）
+VOLUME /tmp
+
+# 6. 暴露端口（可按服务修改）
+EXPOSE 8080
+
+# 7. 启动命令（优化启动速度 & JVM 内存设置）
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Xms512m","-Xmx1024m","-jar","app.jar"]

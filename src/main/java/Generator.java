@@ -12,9 +12,11 @@ import java.util.Map;
 public class Generator {
 
     //project 根目录
-    public final static String BASE_PATH = "D:/Lily/work/project";
+    public final static String BASE_PATH = "/Users/lily/Documents/work/yqys";
+//    public final static String BASE_PATH = "D:/Lily/work/project";
 //    public final static String BASE_PATH = "D://lily/temp";
-    public final static String TEMP_PATH = "D://lily/temp/plus";
+    public final static String TEMP_PATH = "/Users/lily/Documents/work/yqys/temp";
+//    public final static String TEMP_PATH = "D://lily/temp/plus";
     public final static String AUTHOR = "Lily";
     public final static String PATH_API = "api";
     public final static String PATH_CLIENT = "client";

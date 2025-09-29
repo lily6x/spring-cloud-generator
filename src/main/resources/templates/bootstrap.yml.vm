@@ -14,14 +14,14 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 121.196.232.69:8848
-        namespace: 39e568ac-4b77-41cd-94d0-60c30b5dec26
+        server-addr: 47.115.76.103:8848
+        namespace: a7538199-8265-45b9-a2b8-59e2d80a7d39
         file-extension: yaml
         refresh-enabled: true
         group: DEFAULT_GROUP
       discovery:
-        server-addr: 121.196.232.69:8848
-        namespace: 39e568ac-4b77-41cd-94d0-60c30b5dec26
+        server-addr: 47.115.76.103:8848
+        namespace: a7538199-8265-45b9-a2b8-59e2d80a7d39
 
 
 ---
@@ -32,11 +32,11 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 121.196.232.69:8848
-        namespace: 77b50ac0-d068-4a20-b858-5ceebdbe1917
+        server-addr: 47.115.76.103:8848
+        namespace: e2b7f491-0d6b-45d6-823e-34f53e63577b
         file-extension: yaml
         refresh-enabled: true
         group: DEFAULT_GROUP
       discovery:
-        server-addr: 121.196.232.69:8848
-        namespace: 77b50ac0-d068-4a20-b858-5ceebdbe1917
+        server-addr: 47.115.76.103:8848
+        namespace: e2b7f491-0d6b-45d6-823e-34f53e63577b

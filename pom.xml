@@ -20,6 +20,12 @@
         <relativePath /> <!-- -->
     </parent>
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.realityforge.org.jetbrains.annotations/org.jetbrains.annotations -->
         <dependency>
             <groupId>org.realityforge.org.jetbrains.annotations</groupId>
