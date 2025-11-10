@@ -51,15 +51,12 @@ public class Generator {
     }
 
     public static void createDirectory(String directoryPath){
-        // 指定要创建的目录路径
-//        String directoryPath = "/path/to/your/directory";
-
-        // 创建File对象
         File directory = new File(directoryPath);
-
-        // 使用mkdirs()方法创建目录
+        if (directory.exists()) {
+            System.out.println("目录已存在：" + directoryPath);
+            return;
+        }
         boolean created = directory.mkdirs();
-
         if (created) {
             System.out.println("目录已成功创建！");
         } else {
@@ -88,6 +85,8 @@ public class Generator {
         private String dbSchema;
 
         private String include;
+        private String basePath = Generator.BASE_PATH;
+        private String author = Generator.AUTHOR;
 
 
 
@@ -104,17 +103,16 @@ public class Generator {
         }
 
         public String getProjectPath(){
-            return String.format("%s/%s", BASE_PATH,this.artifactId);
+            return String.format("%s/%s", this.basePath,this.artifactId);
         }
         public String getModelApiPath(){
-//            String projectPath = Generator.BASE_PATH + "/" + artifactId;
-            return String.format("%s/%s/%s-%s",BASE_PATH,this.artifactId,this.model,PATH_API);
+            return String.format("%s/%s/%s-%s",this.basePath,this.artifactId,this.model,PATH_API);
         }
         public String getModelClientPath(){
-            return String.format("%s/%s/%s-%s",BASE_PATH,this.artifactId,this.model,PATH_CLIENT);
+            return String.format("%s/%s/%s-%s",this.basePath,this.artifactId,this.model,PATH_CLIENT);
         }
         public String getModelProviderPath(){
-            return String.format("%s/%s/%s-%s",BASE_PATH,this.artifactId,this.model,PATH_PROVIDER);
+            return String.format("%s/%s/%s-%s",this.basePath,this.artifactId,this.model,PATH_PROVIDER);
         }
 
     }

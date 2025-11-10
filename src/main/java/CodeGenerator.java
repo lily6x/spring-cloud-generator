@@ -7,128 +7,167 @@ import com.baomidou.mybatisplus.generator.fill.Column;
 import com.lily.generator.EngineVelocityTemplateEngine;
 import org.apache.velocity.VelocityContext;
 
-
-import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.UUID;
 
 public class CodeGenerator {
+
+    private static final String DEFAULT_CONFIG_LOCATION = "generator-config.properties";
+
     public static void main(String[] args) {
-        CodeGenerator.execute();
-//        CodeGenerator.uuid();
+        String configLocation = args.length > 0 ? args[0] : DEFAULT_CONFIG_LOCATION;
+        new CodeGenerator().runInteractive(configLocation);
     }
 
-    public static void uuid(){
+    public static void execute() {
+        new CodeGenerator().runInteractive(DEFAULT_CONFIG_LOCATION);
+    }
+
+    public static void execute(Generator.GeneratorConf generatorConf) {
+        new CodeGenerator().generate(generatorConf);
+    }
+
+    public static void uuid() {
         UUID uuid = UUID.randomUUID();
-        String uuidStr = uuid.toString().replace("-", ""); // 去掉UUID中的横线
-        String shortUuid = uuidStr.substring(0, 32); // 取前32位
+        String uuidStr = uuid.toString().replace("-", "");
+        String shortUuid = uuidStr.substring(0, 32);
         System.out.println("32位UUID: " + shortUuid);
     }
 
-    public static void execute(){
-        //Step 1 生成项目名，模块名
-        //project path
+    private void runInteractive(String configLocation) {
+        ScaffoldParameters dataSource = ScaffoldParameters.load(configLocation);
+        Generator.GeneratorConf generatorConf = promptGeneratorConf();
+        dataSource.applyTo(generatorConf);
+        generate(generatorConf);
+    }
+
+    private void generate(Generator.GeneratorConf generatorConf) {
+        configureTemplateEngine(generatorConf);
+        prepareDirectories(generatorConf);
+        VelocityContext context = buildVelocityContext(generatorConf);
+        generateProjectSkeleton(generatorConf, context);
+        runAutoGenerator(generatorConf);
+    }
+
+    private Generator.GeneratorConf promptGeneratorConf() {
+        Scanner scanner = new Scanner(System.in);
         Generator.GeneratorConf generatorConf = new Generator.GeneratorConf();
-        //签名
-        generatorConf.setGroupId("com.mg.ai");
-        //项目名
-        generatorConf.setArtifactId("mindgen-ai-user-center");
-        //模块名
-        generatorConf.setModel("mg-user-center");
-        // 生成表 集合
-        generatorConf.setInclude("t_user,t_account,t_tenant");
+        generatorConf.setGroupId(promptRequired(scanner, "请输入 groupId"));
+        generatorConf.setArtifactId(promptRequired(scanner, "请输入 artifactId"));
+        generatorConf.setModel(promptRequired(scanner, "请输入模块名 model"));
+        generatorConf.setInclude(promptRequired(scanner, "请输入需要生成的表名（逗号分隔）"));
+        generatorConf.setBasePath(promptWithDefault(scanner, "请输入项目输出的根路径", Generator.BASE_PATH));
+        generatorConf.setAuthor(promptWithDefault(scanner, "请输入作者", Generator.AUTHOR));
+        return generatorConf;
+    }
 
+    private String promptRequired(Scanner scanner, String message) {
+        while (true) {
+            System.out.print(message + ": ");
+            String value = scanner.nextLine().trim();
+            if (!value.isEmpty()) {
+                return value;
+            }
+            System.out.println("该参数必填，请重新输入。");
+        }
+    }
 
-//        generatorConf.setInclude("ai_my_message");
-//
-//        generatorConf.setDbUrl("jdbc:mysql://rm-wz912w7jddju3sglupo.mysql.rds.aliyuncs.com/ai_study_room?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true");
-//        generatorConf.setDbUserName("root");
-//        generatorConf.setDbPassword("Szyy2024");
-//        generatorConf.setDbSchema("ai_study_room");
+    private String promptWithDefault(Scanner scanner, String message, String defaultValue) {
+        System.out.printf("%s (默认: %s): ", message, defaultValue);
+        String value = scanner.nextLine().trim();
+        return value.isEmpty() ? defaultValue : value;
+    }
 
-
-        generatorConf.setDbUrl("jdbc:mysql://47.115.76.103:3306/ai_platform?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai&tinyInt1isBit=false");
-        generatorConf.setDbUserName("root");
-        generatorConf.setDbPassword("123456");
-        generatorConf.setDbSchema("ai_platform");
-
-
-        Generator.createDirectory(generatorConf.getProjectPath());
-        Generator.createDirectory(generatorConf.getModelApiPath());
-
-        Generator.createDirectory(generatorConf.getModelClientPath());
-        Generator.createDirectory(generatorConf.getModelProviderPath());
-        Generator.createDirectory(generatorConf.getModelProviderPath()+"/src/main/resources");
-        Generator.createDirectory(generatorConf.getModelClientPath()+"/src/main/resources");
-        Generator.createDirectory(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/domain");
-        Generator.createDirectory(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/common");
-        Generator.createDirectory(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/'));
-        Generator.createDirectory(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/conf");
-        Generator.createDirectory(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/common");
-
-//        EngineVelocityTemplateEngine.generatorConf = generatorConf;
+    private void configureTemplateEngine(Generator.GeneratorConf generatorConf) {
         EngineVelocityTemplateEngine.MODEL = generatorConf.getModel();
         EngineVelocityTemplateEngine.GROUP_ID = generatorConf.getGroupId();
-        System.out.println(generatorConf);
-        //Step 2 创建父pom 文件
-        // 创建Velocity上下文
+    }
+
+    private void prepareDirectories(Generator.GeneratorConf generatorConf) {
+        String basePackagePath = generatorConf.getGroupId().replace('.', '/');
+        List<String> directories = List.of(
+                generatorConf.getProjectPath(),
+                generatorConf.getModelApiPath(),
+                generatorConf.getModelClientPath(),
+                generatorConf.getModelProviderPath(),
+                generatorConf.getModelProviderPath() + "/src/main/resources",
+                generatorConf.getModelClientPath() + "/src/main/resources",
+                generatorConf.getModelProviderPath() + "/src/main/java/" + basePackagePath,
+                generatorConf.getModelProviderPath() + "/src/main/java/" + basePackagePath + "/infrastructure/conf",
+                generatorConf.getModelProviderPath() + "/src/main/java/" + basePackagePath + "/infrastructure/common",
+                generatorConf.getModelApiPath() + "/src/main/java/" + basePackagePath + "/domain",
+                generatorConf.getModelApiPath() + "/src/main/java/" + basePackagePath + "/common"
+        );
+        directories.forEach(Generator::createDirectory);
+    }
+
+    private VelocityContext buildVelocityContext(Generator.GeneratorConf generatorConf) {
         VelocityContext context = new VelocityContext();
-        context.put("model",generatorConf.getModel());
+        context.put("model", generatorConf.getModel());
         context.put("groupId", generatorConf.getGroupId());
         context.put("artifactId", generatorConf.getArtifactId());
         context.put("api", generatorConf.getModelApi());
         context.put("client", generatorConf.getModelClient());
         context.put("provider", generatorConf.getModelProvider());
-        Generator.generatorCus(generatorConf.getProjectPath()+"/pom.xml","templates/parent.pom.vm",context);
-        Generator.generatorCus(generatorConf.getProjectPath()+"/Dockerfile","templates/Dockerfile.vm",context);
-        Generator.generatorCus(generatorConf.getProjectPath()+"/.gitignore","templates/.gitignore.vm",context);
-        Generator.generatorCus(generatorConf.getModelApiPath()+"/pom.xml","templates/api.pom.vm",context);
-        Generator.generatorCus(generatorConf.getModelClientPath()+"/pom.xml","templates/client.pom.vm",context);
-        Generator.generatorCus(generatorConf.getModelProviderPath()+"/pom.xml","templates/provider.pom.vm",context);
-        Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/resources/application.yml","templates/application.yml.vm",context);
-        Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/resources/logback-spring.xml","templates/logback-spring.xml.vm",context);
-        Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/resources/bootstrap.yml","templates/bootstrap.yml.vm",context);
-        Generator.generatorCus(generatorConf.getModelClientPath()+"/src/main/resources/application.yml","templates/client-application.yml.vm",context);
-        Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/ApplicationMain.java","templates/application.main.java.vm",context);
-        Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/conf/SwaggerConfig.java","templates/swagger.config.java.vm",context);
-        Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/conf/MyBatisPlusConfig.java","templates/mybatis.plus.config.java.vm",context);
-        Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/conf/MyMetaObjectHandler.java","templates/mybatis.plus.fill.java.vm",context);
-        Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/common/BaseEntity.java","templates/base.entity.java.vm",context);
-        Generator.generatorCus(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/common/ObjectConvert.java","templates/object.convert.java.vm",context);
-        Generator.generatorCus(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/domain/BaseDM.java","templates/base.dm.java.vm",context);
-        Generator.generatorCus(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/common/BaseResponse.java","templates/base.response.java.vm",context);
-        Generator.generatorCus(generatorConf.getModelApiPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/common/PageDM.java","templates/page.dm.java.vm",context);
-
-        //Step 3
-        CodeGenerator.testSimple(generatorConf);
+        return context;
     }
 
+    private void generateProjectSkeleton(Generator.GeneratorConf generatorConf, VelocityContext context) {
+        String basePackagePath = generatorConf.getGroupId().replace('.', '/');
+        String providerJavaBase = generatorConf.getModelProviderPath() + "/src/main/java/" + basePackagePath;
+        String apiJavaBase = generatorConf.getModelApiPath() + "/src/main/java/" + basePackagePath;
 
+        Map<String, String> templateMapping = new LinkedHashMap<>();
+        templateMapping.put(generatorConf.getProjectPath() + "/pom.xml", "templates/parent.pom.vm");
+        templateMapping.put(generatorConf.getProjectPath() + "/Dockerfile", "templates/Dockerfile.vm");
+        templateMapping.put(generatorConf.getProjectPath() + "/.gitignore", "templates/.gitignore.vm");
+        templateMapping.put(generatorConf.getModelApiPath() + "/pom.xml", "templates/api.pom.vm");
+        templateMapping.put(generatorConf.getModelClientPath() + "/pom.xml", "templates/client.pom.vm");
+        templateMapping.put(generatorConf.getModelProviderPath() + "/pom.xml", "templates/provider.pom.vm");
+        templateMapping.put(generatorConf.getModelProviderPath() + "/src/main/resources/application.yml", "templates/application.yml.vm");
+        templateMapping.put(generatorConf.getModelProviderPath() + "/src/main/resources/logback-spring.xml", "templates/logback-spring.xml.vm");
+        templateMapping.put(generatorConf.getModelProviderPath() + "/src/main/resources/bootstrap.yml", "templates/bootstrap.yml.vm");
+        templateMapping.put(generatorConf.getModelClientPath() + "/src/main/resources/application.yml", "templates/client-application.yml.vm");
+        templateMapping.put(providerJavaBase + "/ApplicationMain.java", "templates/application.main.java.vm");
+        templateMapping.put(providerJavaBase + "/infrastructure/conf/SwaggerConfig.java", "templates/swagger.config.java.vm");
+        templateMapping.put(providerJavaBase + "/infrastructure/conf/MyBatisPlusConfig.java", "templates/mybatis.plus.config.java.vm");
+        templateMapping.put(providerJavaBase + "/infrastructure/conf/MyMetaObjectHandler.java", "templates/mybatis.plus.fill.java.vm");
+        templateMapping.put(providerJavaBase + "/infrastructure/common/BaseEntity.java", "templates/base.entity.java.vm");
+        templateMapping.put(providerJavaBase + "/infrastructure/common/ObjectConvert.java", "templates/object.convert.java.vm");
+        templateMapping.put(apiJavaBase + "/domain/BaseDM.java", "templates/base.dm.java.vm");
+        templateMapping.put(apiJavaBase + "/common/BaseResponse.java", "templates/base.response.java.vm");
+        templateMapping.put(apiJavaBase + "/common/PageDM.java", "templates/page.dm.java.vm");
 
-    /**
-     * 数据源配置
-     */
-    private static final DataSourceConfig DATA_SOURCE_CONFIG = new DataSourceConfig
-            .Builder("jdbc:mysql://rm-wz912w7jddju3sglupo.mysql.rds.aliyuncs.com/dbtest?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true", "root", "Szyy2024")
-//            .Builder("jdbc:mysql://127.0.0.1:3306/dbtest?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true", "root", "123456")
-            .schema("dbtest")
-            .build();
+        templateMapping.forEach((target, template) -> Generator.generatorCus(target, template, context));
+    }
 
-//    @Test
-    public static void testSimple(Generator.GeneratorConf generatorConf) {
+    private void runAutoGenerator(Generator.GeneratorConf generatorConf) {
+        AutoGenerator autoGenerator = new AutoGenerator(buildDataSourceConfig(generatorConf));
+        autoGenerator.packageInfo(buildPackageConfig(generatorConf));
+        autoGenerator.global(buildGlobalConfig(generatorConf));
+        autoGenerator.strategy(buildStrategyConfig(generatorConf));
+        autoGenerator.injection(buildInjectionConfig(generatorConf));
+        autoGenerator.execute(new EngineVelocityTemplateEngine());
+        cleanupPersistentApi(generatorConf);
+    }
 
-        /*
-            步骤：
-            1. 生成持久层文件到临时目录
-            2. 生成项目框架
-            3. Copy 持久层文件到项目
-         */
+    private DataSourceConfig buildDataSourceConfig(Generator.GeneratorConf generatorConf) {
+        return new DataSourceConfig.Builder(
+                generatorConf.getDbUrl(),
+                generatorConf.getDbUserName(),
+                generatorConf.getDbPassword())
+                .schema(generatorConf.getDbSchema())
+                .build();
+    }
 
-        // 包配置
-        PackageConfig packageConfig = new PackageConfig.Builder()
-                .parent(generatorConf.getGroupId()+".infrastructure.persistent")
-//                .moduleName(generatorConf.getModel())
+    private PackageConfig buildPackageConfig(Generator.GeneratorConf generatorConf) {
+        return new PackageConfig.Builder()
+                .parent(generatorConf.getGroupId() + ".infrastructure.persistent")
                 .controller("api")
                 .service("service")
                 .serviceImpl("service.impl")
@@ -136,95 +175,82 @@ public class CodeGenerator {
                 .mapper("mapper")
                 .xml("mapper.xml")
                 .build();
+    }
 
-
-        // 全局配置
-        GlobalConfig globalConfig = new GlobalConfig.Builder()
-//                .outputDir(System.getProperty("user.dir") + "/src/main/java")
-                .outputDir(generatorConf.getModelProviderPath()+"/src/main/java")
-                .author(Generator.AUTHOR)
-//                .enableSwagger()
+    private GlobalConfig buildGlobalConfig(Generator.GeneratorConf generatorConf) {
+        return new GlobalConfig.Builder()
+                .outputDir(generatorConf.getModelProviderPath() + "/src/main/java")
+                .author(generatorConf.getAuthor())
                 .enableSpringdoc()
                 .disableOpenDir()
                 .build();
+    }
 
-        // 策略配置
-        StrategyConfig strategyConfig = new StrategyConfig.Builder()
+    private StrategyConfig buildStrategyConfig(Generator.GeneratorConf generatorConf) {
+        return new StrategyConfig.Builder()
                 .addInclude(generatorConf.getInclude())
-                //实体类策略配置
-                .entityBuilder().enableLombok()
-                .superClass(generatorConf.getGroupId()+".infrastructure.common.BaseEntity")
+                .entityBuilder()
+                .enableLombok()
+                .superClass(generatorConf.getGroupId() + ".infrastructure.common.BaseEntity")
                 .addSuperEntityColumns("created_by", "created_time", "updated_by", "updated_time", "deleted")
                 .idType(IdType.ASSIGN_UUID)
                 .logicDeleteColumnName("deleted")
-//                .addTableFills(new Property("createdTime", FieldFill.INSERT))
-//                .addTableFills(new Property("updatedTime", FieldFill.INSERT_UPDATE))
                 .addTableFills(new Column("created_time", FieldFill.INSERT))
                 .addTableFills(new Column("updated_time", FieldFill.INSERT_UPDATE))
-//                .controllerBuilder().enableRestStyle().superClass("com.lily.demo.api.TUserDomainApi")
-//                .controllerBuilder().enableRestStyle().superClass(generatorConf.getGroupId().replace('/','.') + ".api"+)
                 .build();
-        List<CustomFile> list = new ArrayList<>();
-        list.add(new CustomFile.Builder()
+    }
+
+    private InjectionConfig buildInjectionConfig(Generator.GeneratorConf generatorConf) {
+        return new InjectionConfig.Builder()
+                .customFile(createCustomFiles(generatorConf))
+                .build();
+    }
+
+    private List<CustomFile> createCustomFiles(Generator.GeneratorConf generatorConf) {
+        String basePackage = generatorConf.getGroupId();
+        List<CustomFile> customFiles = new ArrayList<>();
+        customFiles.add(new CustomFile.Builder()
                 .fileName("DomainIApi.java")
-                .filePath(generatorConf.getModelApiPath()+"/src/main/java")
-                .packageName(generatorConf.getGroupId().replace('/','.') + ".api")
+                .filePath(generatorConf.getModelApiPath() + "/src/main/java")
+                .packageName(basePackage + ".api")
                 .templatePath("/templates/ApiI.java.vm")
                 .build());
-        list.add(new CustomFile.Builder()
+        customFiles.add(new CustomFile.Builder()
                 .fileName("DM.java")
-                .filePath(generatorConf.getModelApiPath()+"/src/main/java")
-                .packageName(generatorConf.getGroupId().replace('/','.') + ".domain")
-//                .packageName("com.lily.demo.domain")
+                .filePath(generatorConf.getModelApiPath() + "/src/main/java")
+                .packageName(basePackage + ".domain")
                 .templatePath("/templates/entityDM.java.vm")
                 .build());
-        list.add(new CustomFile.Builder()
+        customFiles.add(new CustomFile.Builder()
                 .fileName("DomainApiClient.java")
-                .filePath(generatorConf.getModelClientPath()+"/src/main/java")
-                .packageName(generatorConf.getGroupId().replace('/','.') + ".api")
-//                .packageName("com.lily.demo.domain")
+                .filePath(generatorConf.getModelClientPath() + "/src/main/java")
+                .packageName(basePackage + ".api")
                 .templatePath("/templates/client-api.java.vm")
                 .build());
-
-        list.add(new CustomFile.Builder()
+        customFiles.add(new CustomFile.Builder()
                 .fileName("Domain.java")
-                .filePath(generatorConf.getModelProviderPath()+"/src/main/java")
-                .packageName(generatorConf.getGroupId().replace('/','.') + ".domain")
-//                .packageName("com.lily.demo.domain")
+                .filePath(generatorConf.getModelProviderPath() + "/src/main/java")
+                .packageName(basePackage + ".domain")
                 .templatePath("/templates/domain.java.vm")
                 .build());
-        list.add(new CustomFile.Builder()
+        customFiles.add(new CustomFile.Builder()
                 .fileName("DomainApi.java")
-                .filePath(generatorConf.getModelProviderPath()+"/src/main/java")
-                .packageName(generatorConf.getGroupId().replace('/','.') + ".application")
-//                .packageName("com.lily.demo.domain")
+                .filePath(generatorConf.getModelProviderPath() + "/src/main/java")
+                .packageName(basePackage + ".application")
                 .templatePath("/templates/domain.api.java.vm")
                 .build());
-        list.add(new CustomFile.Builder()
+        customFiles.add(new CustomFile.Builder()
                 .fileName("DomainService.java")
-                .filePath(generatorConf.getModelProviderPath()+"/src/main/java")
-                .packageName(generatorConf.getGroupId().replace('/','.') + ".domain")
-//                .packageName("com.lily.demo.domain")
+                .filePath(generatorConf.getModelProviderPath() + "/src/main/java")
+                .packageName(basePackage + ".domain")
                 .templatePath("/templates/domain.service.java.vm")
                 .build());
-        InjectionConfig injectionConfig = new InjectionConfig.Builder().customFile(list).build();
+        return customFiles;
+    }
 
-        DataSourceConfig dataSourceConfig = new DataSourceConfig
-                .Builder(generatorConf.getDbUrl(),generatorConf.getDbUserName(),generatorConf.getDbPassword())
-                .schema(generatorConf.getDbSchema())
-                .build();
-        AutoGenerator generator = new AutoGenerator(dataSourceConfig);
-        generator.strategy(strategyConfig);
-        generator.global(globalConfig);
-        generator.packageInfo(packageConfig);
-        generator.injection(injectionConfig);
-//        generator.template(new EngineVelocityTemplateEngine());
-
-        generator.execute(new EngineVelocityTemplateEngine());
-
-        //删除 持久层 API 目录
-        Generator.deleteDirectory(new File(generatorConf.getModelProviderPath()+"/src/main/java/"+generatorConf.getGroupId().replace('.','/')+"/infrastructure/persistent/api"));
-
-
+    private void cleanupPersistentApi(Generator.GeneratorConf generatorConf) {
+        String path = generatorConf.getModelProviderPath() + "/src/main/java/" +
+                generatorConf.getGroupId().replace('.', '/') + "/infrastructure/persistent/api";
+        Generator.deleteDirectory(new File(path));
     }
 }
